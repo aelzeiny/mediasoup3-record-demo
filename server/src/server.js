@@ -6,6 +6,7 @@ const { v1: uuidv1 } = require('uuid');
 const config = require('./config');
 const FFmpeg = require('./ffmpeg');
 const GStreamer = require('./gstreamer');
+const SerialStreamer = require('./serial');
 const {
   initializeWorkers,
   createRouter,
@@ -197,7 +198,7 @@ const handleStartRecordRequest = async (jsonMessage) => {
     throw new Error(`Peer with id ${jsonMessage.sessionId} was not found`);
   }
 
-  startRecord(peer);
+  startMediaProcessing(peer);
 };
 
 const handleStopRecordRequest = async (jsonMessage) => {
@@ -286,20 +287,20 @@ const publishProducerRtpStream = async (peer, producer, ffmpegRtpCapabilities) =
   };
 };
 
-const startRecord = async (peer) => {
-  let recordInfo = {};
+const startMediaProcessing = async (peer) => {
+  let mediaInfo = {};
 
   for (const producer of peer.producers) {
-    recordInfo[producer.kind] = await publishProducerRtpStream(peer, producer);
+    mediaInfo[producer.kind] = await publishProducerRtpStream(peer, producer);
   }
 
-  recordInfo.fileName = Date.now().toString();
+  mediaInfo.fileName = Date.now().toString();
 
-  peer.process = getProcess(recordInfo);
+  peer.process = getProcess(mediaInfo);
 
   setTimeout(async () => {
     for (const consumer of peer.consumers) {
-      // Sometimes the consumer gets resumed before the GStreamer process has fully started
+      // Sometimes the consumer gets resumed before the processing has fully started
       // so wait a couple of seconds
       await consumer.resume();
       await consumer.requestKeyFrame();
@@ -307,11 +308,13 @@ const startRecord = async (peer) => {
   }, 1000);
 };
 
-// Returns process command to use (GStreamer/FFmpeg) default is FFmpeg
+// Returns process command to use (GStreamer/FFmpeg/SerialStreamer) default is FFmpeg
 const getProcess = (recordInfo) => {
   switch (PROCESS_NAME) {
     case 'GStreamer':
       return new GStreamer(recordInfo);
+    case 'SerialStreamer':
+      return new SerialStreamer(recordInfo);
     case 'FFmpeg':
     default:
       return new FFmpeg(recordInfo);
