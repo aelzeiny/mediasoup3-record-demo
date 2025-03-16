@@ -9,7 +9,15 @@ const mediasoupConfig = require('../../server/src/config');
 let peer;
 const queue = new SocketQueue();
 
-const socket = new WebSocket(`wss://${window.location.hostname}:3000`);
+// The WebSocket connection to the server
+// Note: Use wss://localhost:3000 directly rather than window.location.hostname
+const socket = new WebSocket('wss://localhost:3000');
+
+// Add event listener for WebSocket connection errors
+socket.addEventListener('error', (error) => {
+  console.error('WebSocket connection error:', error);
+  alert('WebSocket connection failed. Please accept the certificate by opening https://localhost:3000 in a new tab and accepting the security warning.');
+});
 
 const handleSocketOpen = async () => {
   console.log('handleSocketOpen()');

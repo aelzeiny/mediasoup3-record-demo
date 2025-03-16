@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Accept WebSocket Certificate</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .instructions {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .step {
+      margin-bottom: 10px;
+    }
+    .btn {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Accept WebSocket Certificate</h1>
+  
+  <div class="instructions">
+    <p>To fix the WebSocket connection issue, please follow these steps:</p>
+    
+    <div class="step">
+      <strong>Step 1:</strong> Click the button below to open the WebSocket server URL.
+    </div>
+    
+    <div class="step">
+      <strong>Step 2:</strong> When the browser warns about the certificate, click "Advanced" and then "Proceed to localhost (unsafe)".
+    </div>
+    
+    <div class="step">
+      <strong>Step 3:</strong> Once you see a blank page or security warning, you've successfully accepted the certificate.
+    </div>
+    
+    <div class="step">
+      <strong>Step 4:</strong> Close that tab and return to your application. The WebSocket connection should now work.
+    </div>
+  </div>
+  
+  <a href="https://localhost:3000" target="_blank" class="btn">Open WebSocket Server URL</a>
+</body>
+</html>

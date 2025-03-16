@@ -20,11 +20,33 @@ const {
 const PROCESS_NAME = process.env.PROCESS_NAME || 'FFmpeg';
 const SERVER_PORT = process.env.SERVER_PORT || 3000;
 const HTTPS_OPTIONS = Object.freeze({
-  cert: fs.readFileSync('./ssl/server.crt'),
-  key: fs.readFileSync('./ssl/server.key')
+  cert: fs.readFileSync('./ssl/localhost.crt'),
+  key: fs.readFileSync('./ssl/localhost.key')
 });
 
-const httpsServer = https.createServer(HTTPS_OPTIONS);
+const httpsServer = https.createServer(HTTPS_OPTIONS, (req, res) => {
+  // Serve a simple HTML page when accessing the server directly
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.end(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>WebSocket Server Certificate</title>
+      <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        .success { color: green; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <h1>WebSocket Server</h1>
+      <p class="success">You have successfully accessed the WebSocket server with HTTPS.</p>
+      <p>This means your browser has accepted the certificate, and WebSocket connections should now work.</p>
+      <p>You can close this page and return to your application.</p>
+    </body>
+    </html>
+  `);
+});
 const wss = new WebSocket.Server({ server: httpsServer });
 const peers = new Map();
 
